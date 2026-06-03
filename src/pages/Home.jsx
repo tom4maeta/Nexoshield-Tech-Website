@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import Choose from "../components/Choose";
-
+import WhatsApp from "../components/Whatsapp";
 import {
   FaLaptopCode,
   FaPaintBrush,
@@ -70,7 +70,10 @@ const Home = () => {
       <section>
         <Carousel />
       </section>
-
+      
+      <section>
+        <WhatsApp />
+      </section>
      
       <section className="relative overflow-hidden py-28 bg-gradient-to-br from-gray-50 via-white to-gray-100">
 

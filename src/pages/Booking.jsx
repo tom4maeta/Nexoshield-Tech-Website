@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import bookingImg from "../assets/images/booking.jpg";
+import WhatsApp from "../components/Whatsapp";
 import {
   FaCalendarAlt,
   FaCheckCircle,
@@ -471,6 +472,9 @@ const Booking = () => {
           </motion.div>
         </div>
       </section>
+      <section>
+      <WhatsApp />
+    </section>
     </div>
   );
 };

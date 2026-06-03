@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import bgImage from "../assets/images/image3.jpg";
+import WhatsApp from "../components/Whatsapp";
 function Register() {
   const navigate = useNavigate();
 
@@ -152,6 +153,9 @@ function Register() {
           </Link>
         </p>
       </div>
+      <section>
+      <WhatsApp />
+    </section>
     </div>
   );
 }

@@ -17,7 +17,6 @@ import Footer from "./components/Footer";
 import Booking from "./pages/Booking";
 import Contact from "./pages/Contact";
 
-
 function Layout() {
   const location = useLocation();
 

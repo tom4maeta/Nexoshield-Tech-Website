@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import contact from "../assets/images/contact.jpg";
+import WhatsApp from "../components/Whatsapp";
 
 import {
   FaMapMarkerAlt,
@@ -37,7 +38,7 @@ const CONTACT_INFO = [
   {
     icon: <FaEnvelope />,
     title: "Email Us",
-    lines: ["info@nexoshieldtech.co.ke", "aikotom@nexoshieldtech.co.ke"],
+    lines: ["info@nexoshieldtech.co.ke"],
   },
   {
     icon: <FaClock />,
@@ -392,6 +393,9 @@ const Contact = () => {
             </div>
           </motion.div>
         </div>
+      </section>
+      <section>
+        <WhatsApp />
       </section>
     </div>
   );

@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import WhatsApp from "../components/Whatsapp";
+
 import {
   FaRocket,
   FaChartLine,
@@ -10,7 +12,7 @@ import {
 
 
 import Story1 from "../assets/images/story1.jpg";
-import CEO from "../assets/images/ceo.jpg";
+import CEO from "../assets/images/Founder.jpeg";
 import Designer from "../assets/images/designer.jpg";
 import Cybersecurity from "../assets/images/cybersecurityy.jpg";
 
@@ -65,7 +67,7 @@ const team = [
   },
   
   {
-    name: "Francesca Okoro",
+    name: "Francisca Ayomide",
     role: "Cybersecurity Specialist",
     img: Cybersecurity,
     quote:
@@ -77,6 +79,8 @@ const team = [
 
 const About = () => {
   return (
+
+    
     <div className="bg-white overflow-hidden">
 
      
@@ -199,6 +203,9 @@ const About = () => {
           Get in Touch <FaArrowRight />
         </Link>
       </section>
+      <section>
+      <WhatsApp />
+    </section>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import bgImage from "../assets/images/image3.jpg";
+import WhatsApp from "../components/Whatsapp";
 
 function Login() {
   const navigate = useNavigate();
@@ -30,13 +31,15 @@ function Login() {
         formData
       );
 
+      console.log("Login response:", response);
+
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       alert(response.data.message || "Login successful!");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error?.response ?? error);
 
       alert(
         error.response?.data?.message ||
@@ -64,7 +67,7 @@ function Login() {
             Login
           </h1>
           <p className="text-gray-500 mt-2">
-            Login to access Company Dashboard
+            Login to access your dashboard
           </p>
         </div>
 
@@ -137,6 +140,9 @@ function Login() {
           </Link>
         </p>
       </div>
+      <section>
+      <WhatsApp />
+    </section>
     </div>
   );
 }

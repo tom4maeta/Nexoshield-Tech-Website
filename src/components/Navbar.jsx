@@ -101,7 +101,7 @@ function Navbar() {
 
             <NavLink label="About" to="/about" />
             <Dropdown title="Services" items={servicesMenu} />
-            <NavLink label="Dashboard" to="/login" />
+            <NavLink label="User Dashboard" to="/login" />
             <NavLink label="Contact" to="/contact" />
             
             <Link
@@ -140,7 +140,7 @@ function Navbar() {
 
           <Link to="/contact" onClick={() => setIsOpen(false)} className="py-2">Contact</Link>
 
-          <Link to="/login" onClick={() => setIsOpen(false)} className="py-2">Dashboard</Link>
+          <Link to="/login" onClick={() => setIsOpen(false)} className="py-2">User Dashboard</Link>
           
 
           <Link to="/booking" onClick={() => setIsOpen(false)} className="block w-half mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-half text-center">Book a Service</Link>

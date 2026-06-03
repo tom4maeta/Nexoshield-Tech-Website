@@ -14,7 +14,7 @@ const slidesData = [
   {
     image: image2,
     title: "Penetration Testing Services",
-    subtitle: "Penetarating through your systems and websites safely to identify Vulneralities",
+    subtitle: "Penetarating through your systems and websites safely to identify Vulnerabilities",
   },
   {
     image: image3,

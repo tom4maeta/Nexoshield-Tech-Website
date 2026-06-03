@@ -11,6 +11,7 @@ import cyberImg from "../assets/images/Cyber.jpeg";
 import accessoriesImg from "../assets/images/Accesories.jpg";
 import repairImg from "../assets/images/Repair.jpg";
 import consultingImg from "../assets/images/Consulting.jpg";
+import WhatsApp from "../components/Whatsapp";
 
 export const SERVICES = [
   {
@@ -122,7 +123,9 @@ function Services() {
           </Link>
         ))}
       </section>
-
+<section>
+      <WhatsApp />
+    </section>
     </main>
   );
 }
