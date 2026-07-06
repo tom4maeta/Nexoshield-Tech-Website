@@ -1,156 +1,202 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
-import contact from "../assets/images/contact.jpg";
-import WhatsApp from "../components/Whatsapp";
-
 import {
-  FaMapMarkerAlt,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaClock,
-  FaPaperPlane,
   FaCheckCircle,
+  FaClock,
+  FaEnvelope,
   FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
   FaInstagram,
+  FaLinkedinIn,
+  FaMapMarkerAlt,
+  FaPaperPlane,
+  FaPhoneAlt,
+  FaTwitter,
 } from "react-icons/fa";
 
+import WhatsApp from "../components/Whatsapp";
+import contact from "../assets/images/contact.jpg";
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+const INITIAL_FORM = {
+  fullName: "",
+  email: "",
+  message: "",
+  honeypot: "",
 };
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 const CONTACT_INFO = [
   {
-    icon: <FaMapMarkerAlt />,
+    icon: FaMapMarkerAlt,
     title: "Visit Us",
-    lines: ["Shepherd-Arcade Building,", "Nairobi, Kenya"],
+    lines: ["Shepherd-Arcade Building", "Nairobi, Kenya"],
   },
   {
-    icon: <FaPhoneAlt />,
+    icon: FaPhoneAlt,
     title: "Call Us",
-    lines: ["+254 738 552 698", "+254 728 107  598"],
+    lines: ["+254 738 552 698", "+254 728 107 598"],
   },
   {
-    icon: <FaEnvelope />,
+    icon: FaEnvelope,
     title: "Email Us",
     lines: ["info@nexoshieldtech.co.ke"],
   },
   {
-    icon: <FaClock />,
+    icon: FaClock,
     title: "Working Hours",
-    lines: ["Mon–Fri: 8AM – 6PM", "Sat: 9AM – 2PM"],
+    lines: ["Mon-Fri: 8AM - 6PM", "Sat: 9AM - 2PM"],
+  },
+];
+
+const FORM_FIELDS = [
+  {
+    id: "fullName",
+    label: "Full Name",
+    type: "text",
+    placeholder: "John Doe",
+  },
+  {
+    id: "email",
+    label: "Email Address",
+    type: "email",
+    placeholder: "john@example.com",
   },
 ];
 
 const SOCIALS = [
-  { icon: FaFacebookF, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61574696861347" },
-  { icon: FaTwitter, label: "Twitter", href: "#" },
-  { icon: FaLinkedinIn, label: "LinkedIn", href: "https://www.linkedin.com/in/nexoshieldsoln-254s" },
-  { icon: FaInstagram, label: "Instagram", href: "#" },
+  {
+    icon: FaFacebookF,
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61574696861347",
+  },
+  {
+    icon: FaTwitter,
+    label: "Twitter",
+    href: "#",
+  },
+  {
+    icon: FaLinkedinIn,
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/nexoshieldsoln-254s",
+  },
+  {
+    icon: FaInstagram,
+    label: "Instagram",
+    href: "#",
+  },
 ];
 
+function validateForm(formData) {
+  const nextErrors = {};
 
-const Contact = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    message: "",
-    honeypot: "",
-  });
+  if (!formData.fullName.trim()) {
+    nextErrors.fullName = "Full name is required";
+  }
 
+  if (!formData.email.trim()) {
+    nextErrors.email = "Email is required";
+  } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+    nextErrors.email = "Enter a valid email";
+  }
+
+  if (!formData.message.trim()) {
+    nextErrors.message = "Message cannot be empty";
+  }
+
+  return nextErrors;
+}
+
+function ContactCard({ icon: Icon, title, lines }) {
+  return (
+    <motion.article
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.25 }}
+      className="group rounded-2xl border border-slate-200 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+    >
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-xl text-blue-600 transition duration-300 group-hover:bg-blue-600 group-hover:text-white">
+        <Icon />
+      </div>
+
+      <h3 className="mt-5 font-black text-slate-950">{title}</h3>
+
+      <div className="mt-3 space-y-1">
+        {lines.map((line) => (
+          <p key={line} className="text-sm leading-6 text-slate-600">
+            {line}
+          </p>
+        ))}
+      </div>
+    </motion.article>
+  );
+}
+
+function Contact() {
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
- 
   useEffect(() => {
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
     if (publicKey) {
       emailjs.init(publicKey);
-      console.log("Success");
-    } else {
-      console.error("Failed");
     }
   }, []);
 
- 
-  const validate = () => {
-    const newErrors = {};
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Enter a valid email";
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Message cannot be empty";
-    }
-
-    return newErrors;
-  };
-
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((current) => ({
+      ...current,
       [name]: value,
     }));
 
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
+      setErrors((current) => ({
+        ...current,
         [name]: "",
       }));
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID_CONTACT;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-   
-    if (!serviceId || !templateId || !publicKey) {
-      console.error("EmailJS configuration missing:", {
-        serviceId: !!serviceId,
-        templateId: !!templateId,
-        publicKey: !!publicKey,
-      });
-      alert("Configuration error. Please contact support.");
+    if (formData.honeypot) {
       return;
     }
 
-    const validationErrors = validate();
+    const validationErrors = validateForm(formData);
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-   
-    if (formData.honeypot) {
-      console.log("Spam detected – honeypot filled");
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID_CONTACT;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      alert("Configuration error. Please contact support.");
       return;
     }
 
-   
     setIsLoading(true);
+
     try {
-      const result = await emailjs.send(
+      await emailjs.send(
         serviceId,
         templateId,
         {
@@ -161,159 +207,154 @@ const Contact = () => {
         publicKey
       );
 
-      console.log("Email sent successfully:", result.text);
-
       setIsSubmitted(true);
-      setFormData({
-        fullName: "",
-        email: "",
-        message: "",
-        honeypot: "",
-      });
-
+      setFormData(INITIAL_FORM);
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("Failed to send contact message:", error);
       alert("Oops! Something went wrong. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   };
 
-
   return (
-    <div className="bg-white">
-    
-      <section className="relative py-28 text-white overflow-hidden">
+    <main className="overflow-hidden bg-white text-slate-700">
+      <WhatsApp />
+
+      <section className="relative isolate flex min-h-[78vh] items-center overflow-hidden text-white sm:min-h-[82vh] lg:min-h-[88vh]">
         <img
           src={contact}
-          alt="Contact us"
-          className="absolute inset-0 w-full h-full object-cover"
+          alt="Contact Nexoshield Technology Solutions"
+          className="absolute inset-0 -z-30 h-full w-full scale-[1.02] object-cover object-center"
         />
 
-        <div className="absolute inset-0 bg-black/60" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-20 bg-gradient-to-r from-slate-950/70 via-slate-950/35 to-transparent"
+        />
 
-        <div className="relative max-w-6xl mx-auto text-center px-6">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-20 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent"
+        />
+
+        <div className="mx-auto w-full max-w-7xl px-5 pt-24 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold"
+            transition={{ duration: 0.7 }}
+            className="max-w-3xl rounded-[2rem] bg-slate-950/25 p-6 backdrop-blur-[2px] sm:p-8"
           >
-            Let's <span className="text-blue-300">Connect</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 text-blue-100 max-w-xl mx-auto"
-          >
-            Have a question or project? Reach out and we'll respond within 24 hours.
-          </motion.p>
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+              <span className="h-2 w-2 rounded-full bg-blue-400" />
+
+              <span className="text-[11px] font-black uppercase tracking-[0.22em] text-blue-200">
+                Contact Nexoshield
+              </span>
+            </div>
+
+            <h1 className="mt-7 text-4xl font-black leading-[1.02] sm:text-5xl lg:text-7xl">
+              Let's build something secure, useful, and ready to grow.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
+              Have a question, project, or technical challenge? Reach out and
+              our team will help you take the next step with clarity.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-     
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CONTACT_INFO.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition"
-            >
-              <div className="text-blue-600 text-2xl mb-3">{item.icon}</div>
-              <h3 className="font-semibold mb-2">{item.title}</h3>
-              {item.lines.map((line, idx) => (
-                <p key={idx} className="text-sm text-gray-600">
-                  {line}
-                </p>
-              ))}
-            </motion.div>
+      <section className="border-b border-slate-200 bg-slate-50 py-16">
+        <div className="mx-auto grid max-w-7xl gap-6 px-5 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {CONTACT_INFO.map((item) => (
+            <ContactCard key={item.title} {...item} />
           ))}
         </div>
       </section>
 
-      
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12">
-       
+      <section className="relative overflow-hidden bg-white py-20 sm:py-24 lg:py-32">
+        <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-gray-50 p-8 rounded-2xl shadow-lg"
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_25px_80px_rgba(15,23,42,0.08)] sm:p-8"
           >
-            <h2 className="text-2xl font-bold mb-6">Send Message</h2>
+            <h2 className="text-2xl font-black text-slate-950 sm:text-3xl">
+              Send a Message
+            </h2>
+
+            <p className="mt-3 leading-7 text-slate-600">
+              Tell us what you need. We will review your message and respond as
+              soon as possible.
+            </p>
 
             {isSubmitted && (
-              <div className="mb-6 flex items-center gap-2 bg-green-100 text-green-700 p-4 rounded-lg">
+              <div className="mt-6 flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50 p-4 font-semibold text-green-700">
                 <FaCheckCircle />
-                Message sent successfully! We'll be in touch soon.
+                Message sent successfully. We'll be in touch soon.
               </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-             
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name *
-                </label>
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.fullName ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.fullName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-                )}
-              </div>
+            <form onSubmit={handleSubmit} noValidate className="mt-7 space-y-5">
+              {FORM_FIELDS.map((field) => (
+                <div key={field.id}>
+                  <label
+                    htmlFor={field.id}
+                    className="mb-2 block text-sm font-black text-slate-800"
+                  >
+                    {field.label} *
+                  </label>
 
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="john@example.com"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"}`}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                )}
-              </div>
+                  <input
+                    id={field.id}
+                    name={field.id}
+                    type={field.type}
+                    value={formData[field.id]}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    className={`w-full rounded-2xl border bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 ${
+                      errors[field.id] ? "border-red-400" : "border-slate-300"
+                    }`}
+                  />
 
-             
+                  {errors[field.id] && (
+                    <p className="mt-2 text-sm font-semibold text-red-500">
+                      {errors[field.id]}
+                    </p>
+                  )}
+                </div>
+              ))}
+
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="message"
+                  className="mb-2 block text-sm font-black text-slate-800"
+                >
                   Message *
                 </label>
+
                 <textarea
                   id="message"
                   name="message"
-                  rows="4"
+                  rows="5"
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="Tell us about your project..."
-                  className={`w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 ${errors.message ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full resize-none rounded-2xl border bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 ${
+                    errors.message ? "border-red-400" : "border-slate-300"
+                  }`}
                 />
+
                 {errors.message && (
-                  <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                  <p className="mt-2 text-sm font-semibold text-red-500">
+                    {errors.message}
+                  </p>
                 )}
               </div>
 
-            
               <input
                 type="text"
                 name="honeypot"
@@ -321,84 +362,68 @@ const Contact = () => {
                 onChange={handleChange}
                 tabIndex={-1}
                 autoComplete="off"
-                style={{ display: "none" }}
+                className="hidden"
               />
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg flex items-center justify-center gap-2 font-semibold hover:bg-blue-700 transition disabled:opacity-70"
+                className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-blue-600 px-7 py-4 font-black text-white shadow-[0_18px_40px_rgba(37,99,235,0.22)] transition duration-300 hover:-translate-y-1 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    Send Message
-                    <FaPaperPlane />
-                  </>
-                )}
+                {isLoading ? "Sending..." : "Send Message"}
+                <FaPaperPlane />
               </button>
             </form>
           </motion.div>
 
-          
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col justify-center"
+          <motion.aside
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            className="rounded-[2rem] bg-slate-950 p-7 text-white shadow-[0_30px_90px_rgba(15,23,42,0.22)] sm:p-9 lg:sticky lg:top-28"
           >
-            <h3 className="text-2xl font-bold mb-6">Connect With Us</h3>
-            <p className="text-gray-600 mb-8">
-              Follow us on social media for updates, tech insights, and more.
-            </p>
-            <div className="flex gap-4">
-              {SOCIALS.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <motion.a
-                    key={i}
-                    href={item.href}
-                    aria-label={item.label}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full hover:bg-blue-600 hover:text-white transition shadow"
-                  >
-                    <Icon />
-                  </motion.a>
-                );
-              })}
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-xl">
+              <FaEnvelope />
             </div>
-          </motion.div>
+
+            <h3 className="mt-7 text-2xl font-black sm:text-3xl">
+              Connect With Us
+            </h3>
+
+            <p className="mt-4 leading-8 text-slate-400">
+              Follow Nexoshield for technology updates, cybersecurity insight,
+              and project announcements.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  whileHover={{ y: -3 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-blue-400 hover:bg-blue-600"
+                >
+                  <Icon />
+                </motion.a>
+              ))}
+            </div>
+
+            <div className="mt-10 border-t border-white/10 pt-7">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-blue-300">
+                Response Time
+              </p>
+
+              <p className="mt-3 leading-7 text-slate-300">
+                We usually respond within 24 hours during business days.
+              </p>
+            </div>
+          </motion.aside>
         </div>
       </section>
-      <section>
-        <WhatsApp />
-      </section>
-    </div>
+    </main>
   );
-};
+}
 
 export default Contact;

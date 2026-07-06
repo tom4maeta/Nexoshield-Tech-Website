@@ -4,6 +4,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import { useEffect } from "react";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -17,6 +18,40 @@ import Footer from "./components/Footer";
 import Booking from "./pages/Booking";
 import Contact from "./pages/Contact";
 
+function ScrollToRouteStart() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const targetElement = document.getElementById(hash.slice(1));
+
+      if (targetElement) {
+        const navbarOffset = 96;
+        const targetTop =
+          targetElement.getBoundingClientRect().top +
+          window.scrollY -
+          navbarOffset;
+
+        window.scrollTo({
+          top: targetTop,
+          left: 0,
+          behavior: "smooth",
+        });
+
+        return;
+      }
+    }
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+  }, [pathname, hash]);
+
+  return null;
+}
+
 function Layout() {
   const location = useLocation();
 
@@ -29,6 +64,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <ScrollToRouteStart />
       
       {!hideLayout && <Navbar />}
 
