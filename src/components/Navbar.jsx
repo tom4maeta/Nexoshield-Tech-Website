@@ -84,14 +84,20 @@ function Navbar() {
 
 
   return (
-    <nav className="fixed w-full z-50 bg-white/70 backdrop-blur-lg shadow-sm">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center h-16">
+    <nav className="fixed w-full z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-between items-center min-h-20 gap-4">
 
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Logo" className="h-10" />
-            <span className="font-bold text-xl text-gray-800">
-              Nexoshield  Technology  Solutions
+          <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 py-2 sm:gap-3 md:flex-none">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white sm:h-14 sm:w-14">
+              <img
+                src="/logo.png"
+                alt="Nexoshield Technology Solutions"
+                className="h-full w-full object-contain"
+              />
+            </span>
+            <span className="block max-w-[10rem] text-xs font-bold leading-tight text-gray-900 sm:max-w-[13rem] sm:text-sm lg:max-w-none lg:text-lg">
+              Nexoshield Technology Solutions
             </span>
           </Link>
 
@@ -123,7 +129,7 @@ function Navbar() {
         </div>
       </div>
 
-      <div className={`md:hidden bg-white/95 backdrop-blur-lg px-6 overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[800px] py-4' : 'max-h-0'}`}>
+      <div className={`md:hidden bg-white px-6 overflow-hidden border-t border-gray-100 transition-all duration-300 ${isOpen ? 'max-h-[800px] py-4' : 'max-h-0'}`}>
         <div className="flex flex-col gap-2">
           <Link to="/#home" onClick={() => setIsOpen(false)} className="block py-2">Home</Link>
 
